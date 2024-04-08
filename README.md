@@ -50,4 +50,5 @@ npx shadcn-ui@latest add input
 npx shadcn-ui@latest add label
 npm i react-icons
 npm i @auth/prisma-adapter
-npm i @types/bcrypt
+npm i @types/bcryptjs
+npm install next-auth@beta

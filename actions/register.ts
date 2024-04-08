@@ -1,5 +1,5 @@
 "use server"
-import bcyrpt from "bcrypt"
+import bcyrpt from "bcryptjs"
 import { RegisterSchema } from "@/schemas"
 import { z } from "zod"
 import { db } from "@/lib/db"
