@@ -58,3 +58,5 @@ npm i resend
 npm i react-spinners
 npx shadcn-ui@latest add dropdown-menu
 npx shadcn-ui@latest add avatar 
+npx shadcn-ui@latest add badge
+npx shadcn-ui@latest add sonner
