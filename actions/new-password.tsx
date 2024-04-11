@@ -2,9 +2,28 @@
 import { db } from "@/lib/db"
 import { getUserByEmail } from "@/data/user"
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token"
+import { z } from "zod"
+import { NewPasswordSchema } from "@/schemas/index"
+import bcyrpt from "bcryptjs"
 
 
-export const newPassword = async (token: string) => {
+export const newPassword = async (values: z.infer<typeof NewPasswordSchema>, token?: string | null) => {
+    if(!token){
+        return {
+            error: "Missing Token!"
+        }
+    }
+
+    const validatedFields = NewPasswordSchema.safeParse(values)
+
+    if(!validatedFields.success){
+        return {
+            error: "Invalid fields"
+        }
+    }
+
+    const { password } = validatedFields.data
+
     const existingToken = await getPasswordResetTokenByToken(token)
 
     if(!existingToken){
@@ -29,11 +48,12 @@ export const newPassword = async (token: string) => {
         }
     }
 
+    const newPassword = await bcyrpt.hash(password, 10)
+
     await db.user.update({
         where: {id: existingUser.id},
         data: {
-            emailVerified: new Date(),
-            email: existingToken.email
+            password: newPassword
         }
     })
 
@@ -42,6 +62,6 @@ export const newPassword = async (token: string) => {
     })
 
     return {
-        success: "Email Verified!"
+        success: "Password Updated!"
     }
 }

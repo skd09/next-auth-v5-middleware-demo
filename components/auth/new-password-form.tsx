@@ -1,57 +1,96 @@
 "use client"
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import * as z from "zod"
+import { useTransition } from 'react'
 import { CardWrapper } from './card-wrapper'
-import { BeatLoader } from 'react-spinners'
-import { useSearchParams } from 'next/navigation'
-import { newVerification } from '@/actions/new-verification'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "../ui/form"
+import { NewPasswordSchema } from '@/schemas'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
 import { FormError } from '../form-error'
 import { FormSuccess } from '../form-success'
+import { reset } from '@/actions/reset'
+import { useSearchParams } from 'next/navigation'
+import { newPassword } from '@/actions/new-password'
 
-const NewPasswordForm = () => {
-    const [error, setError] = useState<string | undefined>()
-    const [success, setSuccess] = useState<string | undefined>()
+export const NewPasswordForm = () => {
+    const [error, setError] = useState<string | undefined>("")
+    const [success, setSuccess] = useState<string | undefined>("")
+    const [isPending, startTransition] = useTransition()
     
     const searchParams = useSearchParams()
     const token = searchParams.get("token")
 
-    const onSubmit = useCallback(() => {
-        if(success || error){
-
+    const form = useForm<z.infer<typeof NewPasswordSchema>>({
+        resolver: zodResolver(NewPasswordSchema),
+        defaultValues: {
+            password: "",
         }
-        console.log(token)
-        if(!token) {
-            setError("Missing Token!")
-        }
-        newVerification(token ?? "")
-            .then((data) => {
-                setError(data.error)
-                setSuccess(data.success)
-            })
-            .catch(() => {
-                setError("Something went wrong!")
-            })
-    }, [token, success, error])
+    })
 
-    useEffect(() => {
-        onSubmit()
-    }, [onSubmit])
+    const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
+        setError("")
+        setSuccess("")
+        startTransition(() => {
+            newPassword(values, token)
+                .then((data) => {
+                    setError(data.error)
+                    setSuccess(data.success)
+                })
+        })
+    }
 
     return (
         <CardWrapper
-            headerLabel='Confirming your Verification'
+            headerLabel='Reset your Password?'
+            backButtonLabel="Back to login"
             backButtonHref='/auth/login'
-            backButtonLabel='Back to Login'
-        >   
-            <div className='flex items-center w-full justify-center'>
-                {!success && !error && 
-                    <BeatLoader />
-                }
-                <FormSuccess message={success}/>
-                { !success && 
+        >
+            <Form {...form}>
+                <form 
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className='space-y-6'
+                >
+                    <div className='space-y-4'>
+                        <FormField 
+                            name='password'
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            {...field}
+                                            placeholder='****'
+                                            type='password'
+                                            disabled={isPending}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                     <FormError message={error}/>
-                }
-                
-            </div>
+                    <FormSuccess message={success}/>
+                    <Button 
+                        className='w-full'
+                        type='submit'
+                        disabled={isPending}
+                    >
+                        Reset Password
+                    </Button>
+                </form>
+            </Form>
         </CardWrapper>
     )
 }

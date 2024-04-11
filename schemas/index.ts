@@ -26,3 +26,9 @@ export const ResetSchema = z.object({
         message: "Email is required"
     })
 })
+
+export const NewPasswordSchema = z.object({
+    password: z.string().min(4, {
+        message: "Minimum 4 characters are required"
+    })
+})
