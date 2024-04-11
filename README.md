@@ -52,3 +52,7 @@ npm i react-icons
 npm i @auth/prisma-adapter
 npm i @types/bcryptjs
 npm install next-auth@beta
+npm i uuid
+npm i --save-dev @types/uuid
+npm i resend
+npm i react-spinners
