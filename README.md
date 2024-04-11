@@ -56,3 +56,5 @@ npm i uuid
 npm i --save-dev @types/uuid
 npm i resend
 npm i react-spinners
+npx shadcn-ui@latest add dropdown-menu
+npx shadcn-ui@latest add avatar 
