@@ -31,3 +31,17 @@ export const sendPasswordEmail = async(
     })
     console.log(data)
 }
+
+export const sendTwoFactorEmail = async(
+    email: string,
+    token: string
+) => {
+    console.log(token)
+    const data = await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: [email],
+        subject: "2FA Code",
+        html: `<p>Your 2FA code: ${token}</p>`  
+    })
+    console.log(data)
+}
