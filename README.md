@@ -60,3 +60,5 @@ npx shadcn-ui@latest add dropdown-menu
 npx shadcn-ui@latest add avatar 
 npx shadcn-ui@latest add badge
 npx shadcn-ui@latest add sonner
+npx shadcn-ui@latest add switch
+npx shadcn-ui@latest add select
